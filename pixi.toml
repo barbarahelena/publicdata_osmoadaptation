@@ -1,0 +1,18 @@
+[workspace]
+authors = ["Barbara Verhaar <bjh.verhaar@gmail.com>"]
+channels = ["conda-forge", "bioconda"]
+name = "publicdata_analyses"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+install-curatedmd = """Rscript -e 'if (!requireNamespace("curatedMetagenomicData", quietly=TRUE)) BiocManager::install("curatedMetagenomicData", update=FALSE, ask=FALSE)'"""
+test = { cmd = "Rscript scripts/curatedMD.R", depends-on = ["install-curatedmd"] }
+
+select-samples = { cmd = "Rscript scripts/select_cmd_samples.R", depends-on = ["install-curatedmd"] }
+select-download = { cmd = "Rscript scripts/select_download_set.R", depends-on = ["install-curatedmd"] }
+ena-batches = { cmd = "Rscript scripts/ena_batches.R results/cmd_download", depends-on = ["select-download"] }
+
+[dependencies]
+bioconductor-curatedmetagenomicdata = ">=3.18.0,<4"
+r-biocmanager = ">=1.30.27,<2"
